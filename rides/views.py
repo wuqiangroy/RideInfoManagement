@@ -120,5 +120,5 @@ class LoginView(generics.GenericAPIView):
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-            }, status=status.HTTP_200_OK)
-        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            }, status=200)
+        return Response({'detail': 'Invalid credentials'}, 401)
