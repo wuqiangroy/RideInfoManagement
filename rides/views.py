@@ -15,7 +15,7 @@ from django.db.models import F, FloatField, ExpressionWrapper
 from django.db.models.functions import Cast
 
 from rides.models import Ride, User
-from rides.serializers import RideSerializer
+from rides.serializers import RideSerializer, UserLoginSerializer
 from rides.permissions import IsAdmin
 from rides.exceptions import CustomValidationError
 
@@ -39,7 +39,7 @@ class RideViewSet(viewsets.ModelViewSet):
     queryset = Ride.objects.all()
     serializer_class = RideSerializer
     pagination_class = RidePagination
-    # permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     filterset_class = RideFilter
     ordering_fields = ['pickup_time']  
@@ -66,9 +66,12 @@ class LoginView(generics.GenericAPIView):
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user = User.objects.get(email=email, password=password)
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid() is not True:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+        user = User.objects.filter(email=email, password=password).first()
         if user is not None:
             refresh = RefreshToken.for_user(user)
             return Response({

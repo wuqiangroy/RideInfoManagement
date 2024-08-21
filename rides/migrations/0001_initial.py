@@ -28,8 +28,7 @@ class Migration(migrations.Migration):
             name='User',
             fields=[
                 ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('id_user', models.IntegerField(unique=True, serialize=False)),
-                ('id', models.IntegerField(primary_key=True, serialize=False)),
+                ('id_user', models.IntegerField(primary_key=True, serialize=False)),
                 ('role', models.CharField(max_length=64)),
                 ('first_name', models.CharField(max_length=128)),
                 ('last_name', models.CharField(max_length=128)),

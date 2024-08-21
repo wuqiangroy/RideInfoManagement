@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
 
 class Ride(models.Model):
     id_ride = models.IntegerField(primary_key=True)
@@ -17,19 +18,18 @@ class Ride(models.Model):
     class Meta:
         app_label = 'rides'
 
-    def distanuce_to(self, latitude, longitude):
-        retrn ((latitude - self.pickup_latitude) ** 2 + (longitude - self.pickup_longitude) ** 2) ** 0.5
 
-
-class User(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    id_user = models.IntegerField(unique=True)
+class User(AbstractBaseUser):
+    id_user = models.IntegerField(primary_key=True)
     role = models.CharField(max_length=64)  # admin or others
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     email = models.CharField(max_length=128, unique=True)
     password = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=20)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return f"User {self.email}"

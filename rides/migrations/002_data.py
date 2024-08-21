@@ -1,5 +1,5 @@
 from django.db import migrations
-from datetime import datetime
+from django.utils import timezone
 import random
 
 def create_initial_data(apps, schema_editor):
@@ -8,7 +8,6 @@ def create_initial_data(apps, schema_editor):
     RideEvent = apps.get_model('rides', 'RideEvent')
 
     User.objects.create(
-        id = 1,
         id_user=1,
         role='admin',
         first_name='Admin',
@@ -20,7 +19,6 @@ def create_initial_data(apps, schema_editor):
 
     for i in range(2, 102):
         User.objects.create(
-            id = i,
             id_user=i,
             role='user',
             first_name=f'User{i}',
@@ -40,7 +38,7 @@ def create_initial_data(apps, schema_editor):
             pickup_longitude=-75.0 + (i % 10) * 0.01,
             dropoff_latitude=40.1 + (i % 10) * 0.01,
             dropoff_longitude=-75.1 + (i % 10) * 0.01,
-            pickup_time=datetime.now()
+            pickup_time=timezone.now()
         )
 
         for j in range(1, 6): 
@@ -48,7 +46,7 @@ def create_initial_data(apps, schema_editor):
                 id_ride_event=(i - 1) * 5 + j,
                 id_ride=ride,
                 description=f'Event {j} for Ride {i}',
-                created_at=datetime.now()
+                created_at=timezone.now()
             )
 
 class Migration(migrations.Migration):

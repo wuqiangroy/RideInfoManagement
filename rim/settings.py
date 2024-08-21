@@ -11,7 +11,7 @@ SECRET_KEY = 'django-insecure-odxn51xddb3gasrab3m(xut&)5$edfmb7x$dsf0_8g3rl&1xk@
 DEBUG = True
 
 APPEND_SLASH=False
-
+AUTH_USER_MODEL = 'rides.User'
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -129,6 +129,6 @@ SIMPLE_JWT = {
     'AUDIENCE': None,
     'ISSUER': None,
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
+    'USER_ID_FIELD': 'id_user',
+    'USER_ID_CLAIM': 'id_user',
 }

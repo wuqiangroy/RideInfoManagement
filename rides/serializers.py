@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rides.models import Ride, User, RideEvent
 from datetime import datetime, timedelta
+from django.core.validators import EmailValidator
 
 class RideEventSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +34,14 @@ class RideSerializer(serializers.ModelSerializer):
         one_day_ago = datetime.now() - timedelta(days=1)
         recent_books = obj.ride_events.filter(created_at__gte=one_day_ago)
         return RideEventSerializer(recent_books, many=True).data
+
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[EmailValidator(message="Invalid email format")]
+    )
+    password = serializers.CharField(
+        write_only=True, 
+        required=True,
+    )
