@@ -79,6 +79,7 @@ RideInfoManagement/
 
 **Request Params**
 - status  
+- rider_email
 - latitude
 - longitude
 
