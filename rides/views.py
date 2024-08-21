@@ -3,6 +3,7 @@ import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework import viewsets, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
@@ -16,6 +17,7 @@ from django.db.models.functions import Cast
 from rides.models import Ride, User
 from rides.serializers import RideSerializer
 from rides.permissions import IsAdmin
+from rides.exceptions import CustomValidationError
 
 
 class RideFilter(django_filters.FilterSet):
@@ -40,24 +42,23 @@ class RideViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated, IsAdmin]
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     filterset_class = RideFilter
-    ordering_fields = ['pickup_time']  # Ensure distance_to_pickup is a calculated field
+    ordering_fields = ['pickup_time']  
     
     def get_queryset(self):
         queryset = Ride.objects.all()
-        # Optimize query to reduce the number of queries
         lat = self.request.query_params.get('latitude')
         lon = self.request.query_params.get('longitude')
-
-        if lat and lon:
-            # using Haversine calculate the distance then order
-            queryset = queryset.annotate(
-                distance=ExpressionWrapper(
-                (F('pickup_latitude') - lat) ** 2 + (F('pickup_longitude') - lon) ** 2,
-                output_field=FloatField()
-                )
-            ).order_by('pickup_time', 'distance')
-
-        return queryset
+        try:
+            if lat and lon:
+                queryset = queryset.annotate(
+                    distance=ExpressionWrapper(
+                    (F('pickup_latitude') - float(lat)) ** 2 + (F('pickup_longitude') - float(lon)) ** 2,
+                    output_field=FloatField()
+                    )
+                ).order_by('pickup_time', 'distance')
+            return queryset
+        except (ValueError, TypeError):
+            raise CustomValidationError(message="Latitude and longitude must be valid float numbers.")
 
 
 class LoginView(generics.GenericAPIView):
