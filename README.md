@@ -182,3 +182,27 @@ Django version 5.1, using settings 'rim.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
+
+## Bonus-SQL
+
+Assume we have a field: `dropoff_time`
+So that we can write a SQL:
+
+```sql
+SELECT 
+    strftime('%Y-%m', r.pickup_time) AS month,  
+    u.first_name || ' ' || u.last_name AS driver,  
+    COUNT(r.id_ride) AS trip_count
+FROM 
+    rides_ride r
+JOIN 
+    rides_user u ON r.id_driver = u.id_user
+WHERE 
+    (julianday(r.dropoff_time) - julianday(r.pickup_time)) * 24 * 60 > 60 
+GROUP BY 
+    month, 
+    driver_name 
+ORDER BY 
+    month, 
+    driver_name;
+```
